@@ -98,6 +98,8 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 
 			switch ($json['type'])
 			{
+				case 'charge.refunded':
+					return $this->_validateChargeRefunded($json, $transactionId, $paymentStatus, $transactionDetails, $itemId, $amount, $currency);
 				case 'invoice.payment_succeeded':
 					return $this->_validateInvoicePaymentSucceeded($json, $transactionId, $paymentStatus, $transactionDetails, $itemId, $amount, $currency);
 				default:
@@ -145,6 +147,52 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		}
 
 		return '';
+	}
+
+	protected function _validateChargeRefunded(array $json, &$transactionId, &$paymentStatus, &$transactionDetails, &$itemId, &$amount, &$currency)
+	{
+		if (empty($json['data']['object']['id']))
+		{
+			$this->_setError('Unable to extract charge data');
+			return false;
+		}
+
+		$charge = bdPaygateStripe_Helper_Api::getCharge($json['data']['object']['id']);
+		if ($charge instanceof Stripe_Error)
+		{
+			$this->_setError('Unable to fetch charge from Stripe');
+			return false;
+		}
+		if (!$charge->refunded)
+		{
+			$this->_setError('Stripe reports charge has not been refunded');
+			return false;
+		}
+
+		if (!empty($charge->metadata['itemId']))
+		{
+			$itemId = $charge->metadata['itemId'];
+		}
+		elseif (!empty($charge->customer))
+		{
+			$customer = bdPaygateStripe_Helper_Api::getCustomer($charge->customer);
+			if ($customer instanceof Stripe_Customer)
+			{
+				if (!empty($customer->metadata['itemId']))
+				{
+					$itemId = $customer->metadata['itemId'];
+				}
+			}
+		}
+
+		$transactionId = 'stripe_refunded_' . $charge->id;
+		$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_REJECTED;
+		$transactionDetails = $json['data']['object'];
+		$amount = $charge->amount / 100;
+		$currency = $charge->currency;
+		$transactionDetails[bdPaygate_Processor_Abstract::TRANSACTION_DETAILS_PARENT_TID] = 'stripe_' . $charge->id;
+
+		return true;
 	}
 
 	protected function _validateInvoicePaymentSucceeded(array $json, &$transactionId, &$paymentStatus, &$transactionDetails, &$itemId, &$amount, &$currency)

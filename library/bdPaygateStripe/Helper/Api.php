@@ -2,7 +2,7 @@
 
 class bdPaygateStripe_Helper_Api
 {
-	public static function charge($token, $amountInCents, $currency)
+	public static function charge($token, $amountInCents, $currency, array $metadata = array())
 	{
 		$result = null;
 		self::loadLib();
@@ -13,6 +13,7 @@ class bdPaygateStripe_Helper_Api
 				'amount' => $amountInCents,
 				'currency' => $currency,
 				'card' => $token,
+				'metadata' => $metadata,
 			));
 		}
 		catch (Stripe_Error $e)
@@ -123,6 +124,23 @@ class bdPaygateStripe_Helper_Api
 		}
 
 		return $invoice;
+	}
+
+	public static function getCharge($chargeId)
+	{
+		$charge = null;
+		self::loadLib();
+
+		try
+		{
+			$charge = Stripe_Charge::retrieve($chargeId);
+		}
+		catch (Stripe_Error $e)
+		{
+			$charge = $e;
+		}
+
+		return $charge;
 	}
 
 	public static function loadLib()
