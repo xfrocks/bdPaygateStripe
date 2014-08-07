@@ -57,7 +57,7 @@ class bdPaygateStripe_Helper_Api
 					'currency' => $currency,
 					'interval' => $unit,
 					'interval_count' => $interval,
-					'name' => sprintf('%.2f %s every %d %ss for %s', $cents / 100, strtoupper($currency), $interval, $unit, XenForo_Application::getOptions()->get('boardTitle')),
+					'name' => sprintf('%.2f %s every %d %ss at %s', $cents / 100, strtoupper($currency), $interval, $unit, XenForo_Application::getOptions()->get('boardTitle')),
 				));
 			}
 			catch (Stripe_Error $e)
@@ -69,7 +69,7 @@ class bdPaygateStripe_Helper_Api
 		return $plan;
 	}
 
-	public static function subscribe($token, Stripe_Plan $plan, $email)
+	public static function subscribe($token, Stripe_Plan $plan, $email, array $metadata = array())
 	{
 		$result = null;
 		self::loadLib();
@@ -80,6 +80,7 @@ class bdPaygateStripe_Helper_Api
 				'card' => $token,
 				'plan' => $plan->id,
 				'email' => $email,
+				'metadata' => $metadata,
 			));
 		}
 		catch (Stripe_Error $e)
@@ -105,6 +106,23 @@ class bdPaygateStripe_Helper_Api
 		}
 
 		return $customer;
+	}
+
+	public static function getInvoice($invoiceId)
+	{
+		$invoice = null;
+		self::loadLib();
+
+		try
+		{
+			$invoice = Stripe_Invoice::retrieve(array('id' => $invoiceId));
+		}
+		catch (Stripe_Error $e)
+		{
+			$invoice = $e;
+		}
+
+		return $invoice;
 	}
 
 	public static function loadLib()

@@ -1,3 +1,4 @@
 .DS_Store
 *.devhelper
 library/bdPaygateStripe/DevHelper/Generated
+FileSums.php

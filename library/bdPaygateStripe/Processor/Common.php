@@ -36,10 +36,9 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 			'cents' => XenForo_Input::UINT,
 			'currency' => XenForo_Input::STRING,
 
-			'success' => XenForo_Input::STRING,
+			'success' => XenForo_Input::UINT,
+			'nop' => XenForo_Input::UINT,
 			'charge_id' => XenForo_Input::STRING,
-			'customer_id' => XenForo_Input::STRING,
-			'subscription_id' => XenForo_Input::STRING,
 			'error' => XenForo_Input::STRING,
 			'signature' => XenForo_Input::STRING,
 		));
@@ -64,23 +63,47 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 			if (!empty($filtered['success']))
 			{
 				$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_ACCEPTED;
-
-				if (!empty($filtered['customer_id']) AND !empty($filtered['subscription_id']))
-				{
-					$transactionDetails[bdPaygate_Processor_Abstract::TRANSACTION_DETAILS_SUBSCRIPTION_ID] = bdPaygateStripe_Helper_Sub::doPack($filtered['customer_id'], $filtered['subscription_id']);
-				}
 			}
 			elseif (!empty($filtered['error']))
 			{
 				$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_REJECTED;
+			}
+			elseif (!empty($filtered['nop']))
+			{
+				// try to redirect asap and avoid logging non-sense paygate log entries
+				$redirected = $this->redirectOnCallback($request, $paymentStatus, 'NOP');
+				if ($redirected)
+				{
+					die();
+				}
 			}
 
 			return true;
 		}
 		else
 		{
-			$this->_setError('Request unrecognized');
-			return false;
+			$jsonRaw = file_get_contents('php://input');
+			if (empty($jsonRaw))
+			{
+				$this->_setError('Request not recognized');
+				return false;
+			}
+
+			$json = @json_decode($jsonRaw, true);
+			if (empty($json) OR empty($json['type']))
+			{
+				$this->_setError('Unable to parse JSON');
+				return false;
+			}
+
+			switch ($json['type'])
+			{
+				case 'invoice.payment_succeeded':
+					return $this->_validateInvoicePaymentSucceeded($json, $transactionId, $paymentStatus, $transactionDetails, $itemId, $amount, $currency);
+				default:
+					// stop processing to prevent logging too many paygate log entries
+					die('NOP');
+			}
 		}
 	}
 
@@ -122,6 +145,66 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		}
 
 		return '';
+	}
+
+	protected function _validateInvoicePaymentSucceeded(array $json, &$transactionId, &$paymentStatus, &$transactionDetails, &$itemId, &$amount, &$currency)
+	{
+		if (empty($json['data']['object']['id']))
+		{
+			$this->_setError('Unable to extract invoice data');
+			return false;
+		}
+
+		$invoice = bdPaygateStripe_Helper_Api::getInvoice($json['data']['object']['id']);
+		if ($invoice instanceof Stripe_Error)
+		{
+			$this->_setError('Unable to fetch invoice from Stripe');
+			return false;
+		}
+		if (!$invoice->paid)
+		{
+			$this->_setError('Stripe reports invoice has not been paid');
+			return false;
+		}
+
+		if (empty($invoice->charge))
+		{
+			$this->_setError('Unable to extract charge info');
+			return false;
+		}
+
+		if (empty($invoice->customer))
+		{
+			$this->_setError('Unable to extract customer info');
+			return false;
+		}
+		$customer = bdPaygateStripe_Helper_Api::getCustomer($invoice->customer);
+		if ($customer instanceof Stripe_Error)
+		{
+			$this->_setError('Unable to fetch customer from Stripe');
+			return false;
+		}
+		if (empty($customer->metadata) OR empty($customer->metadata['itemId']))
+		{
+			$this->_setError('Unable to extract item info');
+			return false;
+		}
+
+		if (empty($invoice->subscription))
+		{
+			$this->_setError('Unable to extract subscription info');
+			return false;
+		}
+
+		$transactionId = 'stripe_' . $invoice->charge;
+		$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_ACCEPTED;
+		$transactionDetails = $json['data']['object'];
+		$itemId = $customer->metadata['itemId'];
+		$amount = $invoice->subtotal / 100;
+		$currency = $invoice->currency;
+		$transactionDetails[bdPaygate_Processor_Abstract::TRANSACTION_DETAILS_SUBSCRIPTION_ID] = bdPaygateStripe_Helper_Sub::doPack($invoice->customer, $invoice->subscription);
+
+		return true;
 	}
 
 	public static function getSubscriptionLink($sub)

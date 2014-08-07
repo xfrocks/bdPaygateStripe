@@ -11,6 +11,7 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 			'stripeTokenType' => XenForo_Input::STRING,
 			'stripeEmail' => XenForo_Input::STRING,
 
+			'itemId' => XenForo_Input::STRING,
 			'cents' => XenForo_Input::UINT,
 			'currency' => XenForo_Input::STRING,
 			'recurringInterval' => XenForo_Input::UINT,
@@ -27,6 +28,7 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 		}
 
 		$redirectParams = array(
+			'itemId' => $input['itemId'],
 			'cents' => $input['cents'],
 			'currency' => $input['currency'],
 		);
@@ -53,12 +55,10 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 
 			if ($plan instanceof Stripe_Plan)
 			{
-				$customer = bdPaygateStripe_Helper_Api::subscribe($input['stripeToken'], $plan, $input['stripeEmail']);
+				$customer = bdPaygateStripe_Helper_Api::subscribe($input['stripeToken'], $plan, $input['stripeEmail'], array('itemId' => $input['itemId']));
 				if ($customer instanceof Stripe_Customer)
 				{
-					$redirectParams['customer_id'] = $customer->id;
-					$redirectParams['subscription_id'] = $customer->subscriptions->data[0]->id;
-					$redirectParams['success'] = 1;
+					$redirectParams['nop'] = 1;
 				}
 				elseif ($customer instanceof Stripe_Error)
 				{

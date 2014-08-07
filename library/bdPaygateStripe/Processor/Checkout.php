@@ -40,10 +40,7 @@ class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Commo
 
 		$callbackUrl = $this->_generateCallbackUrl($extraData);
 		$returnUrl = $this->_generateReturnUrl($extraData);
-		$callbackUrl = bdPaygateStripe_Helper_Url::appendParams($callbackUrl, compact(array(
-			'itemId',
-			'returnUrl'
-		)));
+		$callbackUrl = bdPaygateStripe_Helper_Url::appendParams($callbackUrl, compact('returnUrl'));
 		$callbackUrlEncoded = htmlentities($callbackUrl);
 
 		$form = <<<EOF
@@ -62,6 +59,7 @@ class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Commo
 		data-currency="{$currency}">
 	</script>
 
+	<input type="hidden" name="itemId" value="{$itemId}" />
 	<input type="hidden" name="cents" value="{$amountInCents}" />
 	<input type="hidden" name="currency" value="{$currency}" />
 	<input type="hidden" name="recurringInterval" value="{$recurringInterval}" />
