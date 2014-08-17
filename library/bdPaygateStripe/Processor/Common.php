@@ -4,7 +4,13 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 {
 	public function getSupportedCurrencies()
 	{
-		return array(bdPaygate_Processor_Abstract::CURRENCY_USD);
+		return array(
+			bdPaygate_Processor_Abstract::CURRENCY_USD,
+			bdPaygate_Processor_Abstract::CURRENCY_CAD,
+			bdPaygate_Processor_Abstract::CURRENCY_AUD,
+			bdPaygate_Processor_Abstract::CURRENCY_GBP,
+			bdPaygate_Processor_Abstract::CURRENCY_EUR,
+		);
 	}
 
 	public function isRecurringSupported()
