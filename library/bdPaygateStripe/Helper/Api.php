@@ -2,6 +2,73 @@
 
 class bdPaygateStripe_Helper_Api
 {
+	/**
+	 * @return int
+	 */
+	public static function getAmountInCent($amount, $currency)
+	{
+		if (self::isZeroDecimalCurrency($currency))
+		{
+			return intval($amount);
+		}
+
+		if (function_exists('bcmul'))
+		{
+			return intval(bcmul(strval($amount), '100'));
+		}
+		else
+		{
+			return floor(doubleval($amount) * 100);
+		}
+	}
+
+	/**
+	 * @return double
+	 */
+	public static function getAmountFromCent($amount, $currency)
+	{
+		if (self::isZeroDecimalCurrency($currency))
+		{
+			return doubleval($amount);
+		}
+
+		if (function_exists('bcdiv'))
+		{
+			return doubleval(bcdiv(strval($amount), '100', 2));
+		}
+		else
+		{
+			return intval($amount) / 100.0;
+		}
+	}
+
+	public static function isZeroDecimalCurrency($currency)
+	{
+		// list from Stripe Zero-decimal currencies page
+		// https://support.stripe.com/questions/which-zero-decimal-currencies-does-stripe-support
+		// these currencies doesn't need their amount in cents (no multiple by 100)
+		static $currencies = array(
+			'bif',
+			'djf',
+			'jpy',
+			'krw',
+			'pyg',
+			'vnd',
+			'xaf',
+			'xpf',
+			'clp',
+			'gnf',
+			'kmf',
+			'mga',
+			'rwf',
+			'vuv',
+			'xof',
+		);
+
+		$currency = strtolower($currency);
+		return in_array($currency, $currencies, true);
+	}
+
 	public static function charge($token, $amountInCents, $currency, array $metadata = array())
 	{
 		$result = null;
@@ -58,7 +125,7 @@ class bdPaygateStripe_Helper_Api
 					'currency' => $currency,
 					'interval' => $unit,
 					'interval_count' => $interval,
-					'name' => sprintf('%.2f %s every %d %ss at %s', $cents / 100, strtoupper($currency), $interval, $unit, XenForo_Application::getOptions()->get('boardTitle')),
+					'name' => sprintf('%.2f %s every %d %ss at %s', self::getAmountFromCent($cents, $currency), strtoupper($currency), $interval, $unit, XenForo_Application::getOptions()->get('boardTitle')),
 				));
 			}
 			catch (Stripe_Error $e)

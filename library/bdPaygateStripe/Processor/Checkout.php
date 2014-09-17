@@ -35,7 +35,7 @@ class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Commo
 			$panelLabel = '';
 		}
 		$label = new XenForo_Phrase('bdpaygatestripe_call_to_action');
-		$amountInCents = floor($amount * 100);
+		$amountInCents = bdPaygateStripe_Helper_Api::getAmountInCent($amount, $currency);
 		$_xfToken = XenForo_Visitor::getInstance()->get('csrf_token_page');
 
 		$callbackUrl = $this->_generateCallbackUrl($extraData);

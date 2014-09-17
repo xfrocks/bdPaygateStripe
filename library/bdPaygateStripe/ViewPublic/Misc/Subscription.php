@@ -6,7 +6,7 @@ class bdPaygateStripe_ViewPublic_Misc_Subscription extends XenForo_ViewPublic_Ba
 	{
 		$plan = $this->_params['plan'];
 
-		$cost = sprintf('%.2f %s', $plan->amount / 100, strtoupper($plan->currency));
+		$cost = sprintf('%.2f %s', bdPaygateStripe_Helper_Api::getAmountFromCent($plan->amount, $plan->currency), strtoupper($plan->currency));
 
 		if ($plan->interval_count > 1)
 		{

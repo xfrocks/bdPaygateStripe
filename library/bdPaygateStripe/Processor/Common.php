@@ -63,8 +63,8 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 			$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_OTHER;
 			$transactionDetails = $filtered;
 			$itemId = $filtered['itemId'];
-			$amount = $filtered['cents'] / 100;
 			$currency = $filtered['currency'];
+			$amount = bdPaygateStripe_Helper_Api::getAmountFromCent($filtered['cents'], $currency);
 
 			if (!empty($filtered['success']))
 			{
@@ -194,7 +194,7 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		$transactionId = 'stripe_refunded_' . $charge->id;
 		$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_REJECTED;
 		$transactionDetails = $json['data']['object'];
-		$amount = $charge->amount / 100;
+		$amount = bdPaygateStripe_Helper_Api::getAmountFromCent($charge->amount, $charge->currency);
 		$currency = $charge->currency;
 		$transactionDetails[bdPaygate_Processor_Abstract::TRANSACTION_DETAILS_PARENT_TID] = 'stripe_' . $charge->id;
 
@@ -254,7 +254,7 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_ACCEPTED;
 		$transactionDetails = $json['data']['object'];
 		$itemId = $customer->metadata['itemId'];
-		$amount = $invoice->subtotal / 100;
+		$amount = bdPaygateStripe_Helper_Api::getAmountFromCent($invoice->subtotal, $invoice->currency);
 		$currency = $invoice->currency;
 		$transactionDetails[bdPaygate_Processor_Abstract::TRANSACTION_DETAILS_SUBSCRIPTION_ID] = bdPaygateStripe_Helper_Sub::doPack($invoice->customer, $invoice->subscription);
 
