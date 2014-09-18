@@ -65,7 +65,7 @@ class bdPaygateStripe_Installer
 
 	public static function installCustomized($existingAddOn, $addOnData)
 	{
-		if (XenForo_Application::$versionId < 1000000)
+		if (XenForo_Application::$versionId < 1020000)
 		{
 			throw new XenForo_Exception('[bd] Paygate: STRIPE requires XenForo 1.2.0+');
 		}
