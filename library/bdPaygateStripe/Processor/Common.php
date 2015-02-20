@@ -155,6 +155,20 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		return '';
 	}
 
+	protected function _getStripeBitcoin()
+	{
+		$bitcoin = XenForo_Application::getOptions()->get('bdPaygateStripe_zbitcoin');
+
+		if (!empty($bitcoin))
+		{
+			return 'true';
+		}
+		else
+		{
+			return 'false';
+		}
+	}
+
 	protected function _validateChargeRefunded(array $json, &$transactionId, &$paymentStatus, &$transactionDetails, &$itemId, &$amount, &$currency)
 	{
 		if (empty($json['data']['object']['id']))

@@ -11,6 +11,7 @@ class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Commo
 
 		$formAction = XenForo_Link::buildPublicLink('canonical:misc/stripe');
 		$publicKey = $this->_getStripePublicKey();
+		$bitcoin = $this->_getStripeBitcoin();
 		$name = XenForo_Application::getOptions()->get('boardTitle');
 
 		$visitor = XenForo_Visitor::getInstance();
@@ -48,6 +49,7 @@ class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Commo
 	<script
 		src="https://checkout.stripe.com/checkout.js" class="stripe-button"
 		data-key="{$publicKey}"
+		data-bitcoin="{$bitcoin}"
 		data-name="{$name}"
 
 		data-email="{$email}"

@@ -30,6 +30,13 @@
       <relation group_id="bdPaygateStripe" display_order="100"/>
       <relation group_id="debug" display_order="210"/>
     </option>
+    <option option_id="bdPaygateStripe_zbitcoin" edit_format="onoff" data_type="unsigned_integer" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdPaygateStripe" display_order="200"/>
+      <relation group_id="debug" display_order="210"/>
+    </option>
   </optiongroups>
   <permissions>
     <permission_groups/>
@@ -59,6 +66,8 @@
     <phrase title="option_bdPaygateStripe_publicKey_explain" version_id="1" version_string="0.9-dev"><![CDATA[Register for an account at <a href="https://dashboard.stripe.com/" target="_blank" tabindex="-1">Stripe webste</a> to use Stripe as a pay gate. You need to configure a webhook if you want to use the recurring payments.]]></phrase>
     <phrase title="option_bdPaygateStripe_secretKey" version_id="1" version_string="0.9-dev"><![CDATA[Stripe Secret Key]]></phrase>
     <phrase title="option_bdPaygateStripe_secretKey_explain" version_id="1" version_string="0.9-dev"><![CDATA[]]></phrase>
+    <phrase title="option_bdPaygateStripe_zbitcoin" version_id="5" version_string="1.0.2"><![CDATA[Stripe: Accepts Bitcoin]]></phrase>
+    <phrase title="option_bdPaygateStripe_zbitcoin_explain" version_id="5" version_string="1.0.2"><![CDATA[Enable this option to allow users to pay with Bitcoin via Stripe. For more information regarding this, click <a href="https://stripe.com/bitcoin" target="_blank" tabindex="-1">here</a>.]]></phrase>
     <phrase title="option_group_bdPaygateStripe" version_id="1" version_string="0.9-dev"><![CDATA[[bd] Paygates: STRIPE]]></phrase>
     <phrase title="option_group_bdPaygateStripe_description" version_id="1" version_string="0.9-dev"><![CDATA[]]></phrase>
   </phrases>
