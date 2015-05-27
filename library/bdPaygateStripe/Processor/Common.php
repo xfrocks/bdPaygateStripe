@@ -98,9 +98,12 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 			$json = @json_decode($jsonRaw, true);
 			if (empty($json) OR empty($json['type']))
 			{
+                $transactionDetails['jsonRaw'] = $jsonRaw;
 				$this->_setError('Unable to parse JSON');
 				return false;
 			}
+
+            $transactionDetails['json'] = $json;
 
 			switch ($json['type'])
 			{
