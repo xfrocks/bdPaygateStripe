@@ -8,8 +8,8 @@
   <code_events/>
   <code_event_listeners>
     <listener event_id="file_health_check" execute_order="10" callback_class="bdPaygateStripe_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
-    <listener event_id="load_class_controller" execute_order="10" callback_class="bdPaygateStripe_Listener" callback_method="load_class" active="1" hint="" description=""/>
-    <listener event_id="load_class_model" execute_order="10" callback_class="bdPaygateStripe_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="bdPaygateStripe_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Misc" description="XenForo_ControllerPublic_Misc"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="bdPaygateStripe_Listener" callback_method="load_class" active="1" hint="bdPaygate_Model_Processor" description="bdPaygate_Model_Processor"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -21,21 +21,18 @@
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
       <relation group_id="bdPaygateStripe" display_order="100"/>
-      <relation group_id="debug" display_order="210"/>
     </option>
     <option option_id="bdPaygateStripe_secretKey" edit_format="textbox" data_type="string" can_backup="1">
       <default_value></default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
       <relation group_id="bdPaygateStripe" display_order="100"/>
-      <relation group_id="debug" display_order="210"/>
     </option>
     <option option_id="bdPaygateStripe_zbitcoin" edit_format="onoff" data_type="unsigned_integer" can_backup="1">
       <default_value>0</default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
       <relation group_id="bdPaygateStripe" display_order="200"/>
-      <relation group_id="debug" display_order="210"/>
     </option>
   </optiongroups>
   <permissions>
@@ -62,11 +59,11 @@
     <phrase title="bdpaygatestripe_subscription_next_bill" version_id="1" version_string="0.9-dev"><![CDATA[Next bill at]]></phrase>
     <phrase title="bdpaygatestripe_subscription_not_found" version_id="1" version_string="0.9-dev"><![CDATA[Subscription information could not be found.]]></phrase>
     <phrase title="bdpaygatestripe_subscription_started_since" version_id="1" version_string="0.9-dev"><![CDATA[Started since]]></phrase>
-    <phrase title="option_bdPaygateStripe_publicKey" version_id="1" version_string="0.9-dev"><![CDATA[Stripe Publishable Key]]></phrase>
+    <phrase title="option_bdPaygateStripe_publicKey" version_id="7" version_string="1.1.0b"><![CDATA[Publishable Key]]></phrase>
     <phrase title="option_bdPaygateStripe_publicKey_explain" version_id="1" version_string="0.9-dev"><![CDATA[Register for an account at <a href="https://dashboard.stripe.com/" target="_blank" tabindex="-1">Stripe webste</a> to use Stripe as a pay gate. You need to configure a webhook if you want to use the recurring payments.]]></phrase>
-    <phrase title="option_bdPaygateStripe_secretKey" version_id="1" version_string="0.9-dev"><![CDATA[Stripe Secret Key]]></phrase>
+    <phrase title="option_bdPaygateStripe_secretKey" version_id="7" version_string="1.1.0b"><![CDATA[Secret Key]]></phrase>
     <phrase title="option_bdPaygateStripe_secretKey_explain" version_id="1" version_string="0.9-dev"><![CDATA[]]></phrase>
-    <phrase title="option_bdPaygateStripe_zbitcoin" version_id="5" version_string="1.0.2"><![CDATA[Stripe: Accepts Bitcoin]]></phrase>
+    <phrase title="option_bdPaygateStripe_zbitcoin" version_id="7" version_string="1.1.0b"><![CDATA[Accepts Bitcoin]]></phrase>
     <phrase title="option_bdPaygateStripe_zbitcoin_explain" version_id="5" version_string="1.0.2"><![CDATA[Enable this option to allow users to pay with Bitcoin via Stripe. For more information regarding this, click <a href="https://stripe.com/bitcoin" target="_blank" tabindex="-1">here</a>.]]></phrase>
     <phrase title="option_group_bdPaygateStripe" version_id="1" version_string="0.9-dev"><![CDATA[[bd] Paygates: STRIPE]]></phrase>
     <phrase title="option_group_bdPaygateStripe_description" version_id="1" version_string="0.9-dev"><![CDATA[]]></phrase>
