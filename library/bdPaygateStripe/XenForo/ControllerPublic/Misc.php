@@ -34,7 +34,10 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
         if (empty($input['recurringInterval']) OR empty($input['recurringUnit'])) {
             // one time payment
             $chargeResult = bdPaygateStripe_Helper_Api::charge($input['stripeToken'], $input['cents'],
-                $input['currency'], array('itemId' => $input['itemId']));
+                $input['currency'], array(
+                    'itemId' => $input['itemId'],
+                    'email' => $input['stripeEmail'],
+                ));
 
             if ($chargeResult instanceof \Stripe\Charge) {
                 $redirectParams['charge_id'] = $chargeResult->id;

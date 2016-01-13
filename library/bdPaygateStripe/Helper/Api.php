@@ -70,13 +70,22 @@ class bdPaygateStripe_Helper_Api
         $result = null;
         self::loadLib();
 
+        $chargeParams = array(
+            'amount' => $amountInCents,
+            'currency' => $currency,
+            'card' => $token,
+            'metadata' => $metadata,
+        );
+
+        $xenOptions = XenForo_Application::getOptions();
+        if ($xenOptions->get('bdPaygateStripe_receiptEmail')
+            && !empty($metadata['email'])
+        ) {
+            $chargeParams['receipt_email'] = $metadata['email'];
+        }
+
         try {
-            $result = \Stripe\Charge::create(array(
-                'amount' => $amountInCents,
-                'currency' => $currency,
-                'card' => $token,
-                'metadata' => $metadata,
-            ));
+            $result = \Stripe\Charge::create($chargeParams);
         } catch (\Stripe\Error\Base $e) {
             $result = $e;
         }
