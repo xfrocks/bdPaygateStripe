@@ -2,3 +2,4 @@
 *.devhelper
 library/bdPaygateStripe/DevHelper/Generated
 FileSums.php
+library/bdPaygateStripe/DevHelper/XFCP

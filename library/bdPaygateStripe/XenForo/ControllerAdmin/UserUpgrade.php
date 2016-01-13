@@ -4,6 +4,7 @@ class bdPaygateStripe_XenForo_ControllerAdmin_UserUpgrade extends XFCP_bdPaygate
 {
 	public function actionIndex()
 	{
+		/** @var bdPaygateStripe_XenForo_Model_Option $optionModel */
 		$optionModel = $this->getModelFromCache('XenForo_Model_Option');
 		$optionModel->bdPaygateStripe_hijackOptions();
 

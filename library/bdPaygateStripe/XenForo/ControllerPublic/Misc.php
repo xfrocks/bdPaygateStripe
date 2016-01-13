@@ -38,12 +38,12 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 			// one time payment
 			$chargeResult = bdPaygateStripe_Helper_Api::charge($input['stripeToken'], $input['cents'], $input['currency'], array('itemId' => $input['itemId']));
 
-			if ($chargeResult instanceof Stripe_Charge)
+			if ($chargeResult instanceof \Stripe\Charge)
 			{
 				$redirectParams['charge_id'] = $chargeResult->id;
 				$redirectParams['success'] = 1;
 			}
-			elseif ($chargeResult instanceof Stripe_Error)
+			elseif ($chargeResult instanceof \Stripe\Error\Base)
 			{
 				$redirectParams['error'] = $chargeResult->getMessage();
 			}
@@ -53,20 +53,20 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 			// recurring payment
 			$plan = bdPaygateStripe_Helper_Api::getPlan($input['cents'], $input['currency'], $input['recurringInterval'], $input['recurringUnit']);
 
-			if ($plan instanceof Stripe_Plan)
+			if ($plan instanceof \Stripe\Plan)
 			{
 				$customer = bdPaygateStripe_Helper_Api::subscribe($input['stripeToken'], $plan, $input['stripeEmail'], array('itemId' => $input['itemId']));
-				if ($customer instanceof Stripe_Customer)
+				if ($customer instanceof \Stripe\Customer)
 				{
 					$redirectParams['nop'] = 1;
 				}
-				elseif ($customer instanceof Stripe_Error)
+				elseif ($customer instanceof \Stripe\Error\Base)
 				{
 					$redirectParams['error'] = $customer->getMessage();
 					$redirectParams['customer_error'] = $redirectParams['error'];
 				}
 			}
-			elseif ($plan instanceof Stripe_Error)
+			elseif ($plan instanceof \Stripe\Error\Base)
 			{
 				$redirectParams['error'] = $plan->getMessage();
 				$redirectParams['plan_error'] = $redirectParams['error'];
@@ -87,7 +87,7 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 		$templateTitle = 'bdpaygatestripe_misc_subscription';
 
 		$customer = bdPaygateStripe_Helper_Api::getCustomer($subInfo['customerId']);
-		if ($customer instanceof Stripe_Error)
+		if ($customer instanceof \Stripe\Error\Base)
 		{
 			return $this->responseError(new XenForo_Phrase('bdpaygatestripe_customer_not_found'));
 		}
@@ -100,7 +100,7 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 		{
 			$subscription = $customer->subscriptions->retrieve($subInfo['subscriptionId']);
 		}
-		catch (Stripe_Error $e)
+		catch (\Stripe\Error\Base $e)
 		{
 			return $this->responseError(new XenForo_Phrase('bdpaygatestripe_subscription_not_found'));
 		}
@@ -118,7 +118,7 @@ class bdPaygateStripe_XenForo_ControllerPublic_Misc extends XFCP_bdPaygateStripe
 					{
 						$canceled = $subscription->cancel(array('at_period_end' => true));
 					}
-					catch (Stripe_Error $e)
+					catch (\Stripe\Error\Base $e)
 					{
 						// serious problem!
 						throw $e;

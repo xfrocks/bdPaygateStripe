@@ -181,7 +181,7 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		}
 
 		$charge = bdPaygateStripe_Helper_Api::getCharge($json['data']['object']['id']);
-		if ($charge instanceof Stripe_Error)
+		if ($charge instanceof \Stripe\Error\Base)
 		{
 			$this->_setError('Unable to fetch charge from Stripe');
 			return false;
@@ -199,7 +199,7 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		elseif (!empty($charge->customer))
 		{
 			$customer = bdPaygateStripe_Helper_Api::getCustomer($charge->customer);
-			if ($customer instanceof Stripe_Customer)
+			if ($customer instanceof \Stripe\Customer)
 			{
 				if (!empty($customer->metadata['itemId']))
 				{
@@ -227,7 +227,7 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 		}
 
 		$invoice = bdPaygateStripe_Helper_Api::getInvoice($json['data']['object']['id']);
-		if ($invoice instanceof Stripe_Error)
+		if ($invoice instanceof \Stripe\Error\Base)
 		{
 			$this->_setError('Unable to fetch invoice from Stripe');
 			return false;
@@ -250,7 +250,7 @@ abstract class bdPaygateStripe_Processor_Common extends bdPaygate_Processor_Abst
 			return false;
 		}
 		$customer = bdPaygateStripe_Helper_Api::getCustomer($invoice->customer);
-		if ($customer instanceof Stripe_Error)
+		if ($customer instanceof \Stripe\Error\Base)
 		{
 			$this->_setError('Unable to fetch customer from Stripe');
 			return false;
