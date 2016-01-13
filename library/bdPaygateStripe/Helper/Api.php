@@ -73,7 +73,7 @@ class bdPaygateStripe_Helper_Api
         $chargeParams = array(
             'amount' => $amountInCents,
             'currency' => $currency,
-            'card' => $token,
+            'source' => $token,
             'metadata' => $metadata,
         );
 
@@ -144,7 +144,7 @@ class bdPaygateStripe_Helper_Api
 
         try {
             $result = \Stripe\Customer::create(array(
-                'card' => $token,
+                'source' => $token,
                 'plan' => $plan->id,
                 'email' => $email,
                 'metadata' => $metadata,
