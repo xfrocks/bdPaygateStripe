@@ -3,6 +3,8 @@
 class bdPaygateStripe_Helper_Api
 {
     /**
+     * @param float $amount
+     * @param string $currency
      * @return int
      */
     public static function getAmountInCent($amount, $currency)
@@ -19,7 +21,9 @@ class bdPaygateStripe_Helper_Api
     }
 
     /**
-     * @return double
+     * @param int $amount
+     * @param string $currency
+     * @return float
      */
     public static function getAmountFromCent($amount, $currency)
     {
@@ -90,7 +94,12 @@ class bdPaygateStripe_Helper_Api
         try {
             $plan = \Stripe\Plan::retrieve($planId);
 
-            if ($plan->amount != $cents OR strtolower($plan->currency) != strtolower($currency) OR strtolower($plan->interval) != strtolower($unit) OR $plan->interval_count != $interval) {
+            /** @noinspection PhpUndefinedFieldInspection */
+            if ($plan->amount != $cents
+                || strtolower($plan->currency) != strtolower($currency)
+                || strtolower($plan->interval) != strtolower($unit)
+                || $plan->interval_count != $interval
+            ) {
                 // found a plan but its information is not matched
                 // do not use it + generate a new plan id for temporary usage
                 $plan = null;

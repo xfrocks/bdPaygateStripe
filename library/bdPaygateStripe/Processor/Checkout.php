@@ -2,49 +2,54 @@
 
 class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Common
 {
-	public function generateFormData($amount, $currency, $itemName, $itemId, $recurringInterval = false, $recurringUnit = false, array $extraData = array())
-	{
-		$this->_assertAmount($amount);
-		$this->_assertCurrency($currency);
-		$this->_assertItem($itemName, $itemId);
-		$this->_assertRecurring($recurringInterval, $recurringUnit);
+    public function generateFormData(
+        $amount,
+        $currency,
+        $itemName,
+        $itemId,
+        $recurringInterval = false,
+        $recurringUnit = false,
+        array $extraData = array()
+    ) {
+        $this->_assertAmount($amount);
+        $this->_assertCurrency($currency);
+        $this->_assertItem($itemName, $itemId);
+        $this->_assertRecurring($recurringInterval, $recurringUnit);
 
-		$formAction = XenForo_Link::buildPublicLink('canonical:misc/stripe');
-		$publicKey = $this->_getStripePublicKey();
-		$bitcoin = $this->_getStripeBitcoin();
-		$name = XenForo_Application::getOptions()->get('boardTitle');
+        $formAction = XenForo_Link::buildPublicLink('canonical:misc/stripe');
+        $publicKey = $this->_getStripePublicKey();
+        $bitcoin = $this->_getStripeBitcoin();
+        $name = XenForo_Application::getOptions()->get('boardTitle');
 
-		$visitor = XenForo_Visitor::getInstance();
-		$email = $visitor->get('email');
+        $visitor = XenForo_Visitor::getInstance();
+        $email = $visitor->get('email');
 
-		if (!empty($recurringInterval) AND !empty($recurringUnit))
-		{
-			if ($recurringInterval > 1)
-			{
-				$panelLabel = new XenForo_Phrase("bdpaygatestripe_subscribe_x_every_y_{$recurringUnit}s", array(
-					'cost' => '{{amount}}',
-					'length' => $recurringInterval
-				));
-			}
-			else
-			{
-				$panelLabel = new XenForo_Phrase("bdpaygatestripe_subscribe_x_every_{$recurringUnit}", array('cost' => '{{amount}}'));
-			}
-		}
-		else
-		{
-			$panelLabel = '';
-		}
-		$label = new XenForo_Phrase('bdpaygatestripe_call_to_action');
-		$amountInCents = bdPaygateStripe_Helper_Api::getAmountInCent($amount, $currency);
-		$_xfToken = XenForo_Visitor::getInstance()->get('csrf_token_page');
+        if (!empty($recurringInterval)
+            && !empty($recurringUnit)
+        ) {
+            if ($recurringInterval > 1) {
+                $panelLabel = new XenForo_Phrase(sprintf('bdpaygatestripe_subscribe_x_every_y_%ss', $recurringUnit),
+                    array(
+                        'cost' => '{{amount}}',
+                        'length' => $recurringInterval
+                    ));
+            } else {
+                $panelLabel = new XenForo_Phrase(sprintf('bdpaygatestripe_subscribe_x_every_%s', $recurringUnit),
+                    array('cost' => '{{amount}}'));
+            }
+        } else {
+            $panelLabel = '';
+        }
+        $label = new XenForo_Phrase('bdpaygatestripe_call_to_action');
+        $amountInCents = bdPaygateStripe_Helper_Api::getAmountInCent($amount, $currency);
+        $_xfToken = XenForo_Visitor::getInstance()->get('csrf_token_page');
 
-		$callbackUrl = $this->_generateCallbackUrl($extraData);
-		$returnUrl = $this->_generateReturnUrl($extraData);
-		$callbackUrl = bdPaygateStripe_Helper_Url::appendParams($callbackUrl, compact('returnUrl'));
-		$callbackUrlEncoded = htmlentities($callbackUrl);
+        $callbackUrl = $this->_generateCallbackUrl($extraData);
+        $returnUrl = $this->_generateReturnUrl($extraData);
+        $callbackUrl = bdPaygateStripe_Helper_Url::appendParams($callbackUrl, compact('returnUrl'));
+        $callbackUrlEncoded = htmlentities($callbackUrl);
 
-		$form = <<<EOF
+        $form = <<<EOF
 <form action="{$formAction}" method="POST">
 	<script
 		src="https://checkout.stripe.com/checkout.js" class="stripe-button"
@@ -71,7 +76,7 @@ class bdPaygateStripe_Processor_Checkout extends bdPaygateStripe_Processor_Commo
 </form>
 EOF;
 
-		return $form;
-	}
+        return $form;
+    }
 
 }
